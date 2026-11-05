@@ -13,7 +13,8 @@ import { execFile, spawn } from 'node:child_process'
 import { randomInt } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import http from 'node:http'
 import https from 'node:https'
 
@@ -26,6 +27,9 @@ const UA =
   '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
 
 const QMCONF = join(homedir(), 'Library/Preferences/com.tencent.QQMusicMac.plist')
+// The MediaRemote reader ships with this package under qqfav/, so a fresh clone
+// works without the standalone qqfav checkout.
+const PLUGIN_DIR = dirname(fileURLToPath(import.meta.url))
 const COOKIE_FILES = [
   join(homedir(), '.config/qqfav/cookie.txt'),
   join(homedir(), '.config/qqmusic/cookie.txt'),
@@ -810,6 +814,7 @@ async function systemNowPlaying(config) {
   const candidates = [
     process.env.QQFAV_NOWPLAYING,
     config.nowPlayingBin ? expandHome(config.nowPlayingBin) : '',
+    join(PLUGIN_DIR, 'qqfav/bin/nowplaying'),
     join(homedir(), 'myprojects/qqfav/bin/nowplaying'),
     join(homedir(), 'bin/nowplaying'),
     '/usr/local/bin/nowplaying',

@@ -3,3 +3,8 @@ node_modules/
 *.log
 .env
 cookie.txt
+
+# qqfav: Python 缓存与 Swift 构建中间产物
+__pycache__/
+*.pyc
+.build-cache/

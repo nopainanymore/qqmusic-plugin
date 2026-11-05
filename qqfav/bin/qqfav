@@ -1,0 +1,5 @@
+#!/bin/sh
+# qqfav 包装脚本：定位项目根目录后调用 qqfav.py
+DIR=$(cd "$(dirname "$0")/.." && pwd)
+PY=${QQFAV_PYTHON:-$(command -v python3)}
+exec "$PY" "$DIR/qqfav.py" "$@"

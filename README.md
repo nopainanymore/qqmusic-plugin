@@ -51,10 +51,22 @@ Cookie 形式：`uin=o0<uin>; qm_keyst=<token>`；`qqmusic_key` / `musickey` 也
   config:
     cookie: 'uin=o0...; qm_keyst=...'   # 可选，绕过客户端登录态
     playlist: '2026Q4'                  # 可选，覆盖季度歌单名
-    nowPlayingBin: '~/myprojects/qqfav/bin/nowplaying'  # 可选，系统正在播放读取器
+    nowPlayingBin: '/usr/local/bin/nowplaying'  # 可选，覆盖包内自带的读取器
 ```
 
-`nowPlayingBin` 不填时会自动找 `~/myprojects/qqfav/bin/nowplaying`、`~/bin/nowplaying`、`/usr/local/bin/nowplaying`、`/opt/homebrew/bin/nowplaying`，也认 `QQFAV_NOWPLAYING`。它是 QQ 音乐收藏 CLI `qqfav` 自带的 MediaRemote 读取器，本项目复用同一个二进制，但不依赖 qqfav 的 Python 代码。
+`nowPlayingBin` 不填时会依次找包内自带的 `qqfav/bin/nowplaying`、`~/myprojects/qqfav/bin/nowplaying`、`~/bin/nowplaying`、`/usr/local/bin/nowplaying`、`/opt/homebrew/bin/nowplaying`，也认 `QQFAV_NOWPLAYING`。这个 MediaRemote 读取器随包分发（`qqfav/` 目录），新克隆的仓库装完即可用，不再依赖外部 qqfav 检出。
+
+## 内置的 qqfav
+
+`qqfav/` 是同一份「一键收藏正在播放」命令行工具，与插件共用歌单语义、登录态读取和 `nowplaying` 读取器：
+
+```sh
+./qqfav/bin/qqfav check            # 诊断：登录态 / 歌单 / 正在播放
+./qqfav/bin/qqfav now --notify     # 收藏当前播放并弹通知
+./qqfav/bin/qqfav list             # 看本季歌单
+```
+
+`qqfav/bin/nowplaying` 是 arm64 预编译二进制，源码在 `qqfav/src/nowplaying.swift`；需要重编时运行 `./qqfav/build.sh`（需要 Xcode 命令行工具）。更多用法见 [qqfav/README.md](qqfav/README.md)。
 
 ## 本季收藏的行为
 
