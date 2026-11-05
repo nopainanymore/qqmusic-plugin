@@ -1,0 +1,10 @@
+- insert:
+    - id: qqmusic
+      name: '@local/qqmusic'
+      config:
+        # Optional: paste a full cookie to bypass the local QQ Music client.
+        # cookie: 'uin=o0...; qm_keyst=...'
+        # Optional: override the quarterly playlist name (defaults to f"{year}Q{quarter}").
+        # playlist: '2026Q4'
+        # Optional: custom path to the MediaRemote now-playing helper.
+        # nowPlayingBin: '~/myprojects/qqfav/bin/nowplaying'
