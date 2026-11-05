@@ -19,6 +19,34 @@
 | 播放页 | 大封面 + 随封面着色的背景 + 逐行歌词（点歌词跳到该句）+ 进度 / 音量 / 循环 / 音质 |
 | 手动登录 | 粘贴 `uin=...; qm_keyst=...` 即可临时换号（只存在 Host 进程内存） |
 
+## 安装
+
+需要 macOS（系统「正在播放」与 QQ 音乐客户端登录态都依赖它）和一份能正常启动的 DeepSeek Harness。
+
+**Desktop 版**：侧边栏「插件」页 → 安装 → 填仓库地址。Desktop 的 profile 由应用自己持有，命令行 `dsh plugin --profile desktop` 会被拒绝，请用插件页操作。
+
+**Web / CLI 版**：
+
+```sh
+dsh plugin --profile web add git+https://github.com/nopainanymore/qqmusic-plugin.git
+```
+
+装完确认 profile 的 `dsh.profile.bundles` 里出现 `@local/qqmusic`，然后刷新页面；没有启用 HMR 时需要重启 dsh。侧边栏出现音符图标即安装成功。
+
+本地开发用绝对路径安装，改完重载即可：
+
+```sh
+dsh plugin --profile web add /path/to/qqmusic-plugin
+```
+
+卸载：
+
+```sh
+dsh plugin --profile web remove @local/qqmusic
+```
+
+`qqfav/bin/nowplaying` 是 arm64 预编译二进制，Intel Mac 上先跑一次 `./qqfav/build.sh` 重编（需要 Xcode 命令行工具）。
+
 ## 快速开始
 
 1. 确认 macOS 版 QQ 音乐客户端已登录（插件默认从这里取登录态）。
@@ -156,3 +184,7 @@ qqmusic-plugin/
 - 每日30首按上海日期校验，跨日或服务端未刷新时主页会提示并保留推荐歌单 / 猜你喜欢。
 - 系统「正在播放」靠 MediaRemote，暂停或客户端未播放时可能读不到——此时用播放条上的 ♥ 直接收藏插件内正在播放的歌，或在面板里搜索后点行内 ♥。
 - 修改 Host 代码（`index.js`）后需要重启 Harness 才会加载新代码；Client（`client.js`）在开发模式下由 HMR 重载。
+
+## 许可证
+
+[MIT](LICENSE) © 2026 liwang
