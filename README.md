@@ -187,4 +187,4 @@ qqmusic-plugin/
 
 ## 许可证
 
-[MIT](LICENSE) © 2026 liwang
+[MIT](LICENSE) © 2026 nopainanymore
