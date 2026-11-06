@@ -153,7 +153,7 @@ node index.js selftest
 - **类型**：系统字体，macOS 字阶 26 / 22 / 17 / 15 / 13 / 11；正文 13px，元信息不小于 11px（typography › macOS built-in text styles）。
 - **控件与可达性**：图标按钮 28×28（高于 macOS 20pt 最小值），列表行 44–46px；图标按钮都有 `aria-label`，导航用 `aria-current` 标记当前位置，弹层可 Escape 关闭，焦点有可见描边。
 - **降级**：`prefers-reduced-motion` 关闭动画，`prefers-reduced-transparency` 回退为不透明，颜色全部使用 `--dsw-alias-*` 语义色。
-- **反馈**：提示改为可手动关闭的行内条（不再自动消失），加载用骨架行替代文案跳动。
+- **反馈**：提示是顶部浮层卡片（带状态图标、可手动关闭）；收藏成功/重复收藏的卡片 5 秒后自动收起，错误提示保持常驻，加载用骨架行替代文案跳动。
 
 ## 实现要点
 

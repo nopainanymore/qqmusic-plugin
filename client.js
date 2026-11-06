@@ -850,6 +850,40 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function StatusIcon(props) {
+      const size = props.size || 15
+      if (props.kind === 'error') {
+        return h(
+          Svg,
+          { size },
+          h('circle', { cx: 12, cy: 12, r: 8.5, stroke: 'currentColor', strokeWidth: 1.8, fill: 'none' }),
+          h('path', { d: 'M12 7.5v5.2', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' }),
+          h('circle', { cx: 12, cy: 16.4, r: 1.1, fill: 'currentColor' }),
+        )
+      }
+      if (props.kind === 'info') {
+        return h(
+          Svg,
+          { size },
+          h('circle', { cx: 12, cy: 12, r: 8.5, stroke: 'currentColor', strokeWidth: 1.8, fill: 'none' }),
+          h('path', { d: 'M12 11v5', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' }),
+          h('circle', { cx: 12, cy: 7.8, r: 1.1, fill: 'currentColor' }),
+        )
+      }
+      return h(
+        Svg,
+        { size },
+        h('path', {
+          d: 'M5 12.5l4.3 4.3L19 7',
+          stroke: 'currentColor',
+          strokeWidth: 2.1,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          fill: 'none',
+        }),
+      )
+    }
+
     function Cover(props) {
       const [failed, setFailed] = React.useState(false)
       const size = props.size || 44
@@ -973,6 +1007,16 @@ window.__ModuleLoader__.load({
 .qm-toast.ok{border-color:color-mix(in srgb,var(--dsw-alias-state-success-primary) 55%,var(--dsw-alias-border-l1));color:var(--dsw-alias-state-success-primary)}
 .qm-toast.error{border-color:color-mix(in srgb,var(--dsw-alias-state-error-primary) 55%,var(--dsw-alias-border-l1));color:var(--dsw-alias-state-error-primary)}
 .qm-toast-text{flex:1;min-width:0}
+.qm-notice-layer{position:absolute;left:0;right:0;top:58px;z-index:44;display:flex;justify-content:center;padding:0 16px;pointer-events:none}
+.qm-notice-card{pointer-events:auto;display:flex;align-items:flex-start;gap:10px;width:min(440px,100%);padding:11px 10px 11px 12px;border-radius:12px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-overlay);box-shadow:0 18px 48px rgba(0,0,0,.24);animation:qm-card-in .22s var(--qm-ease)}
+.qm-notice-icon{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary)}
+.qm-notice-card.ok .qm-notice-icon{color:var(--dsw-alias-state-success-primary);background:color-mix(in srgb,var(--dsw-alias-state-success-primary) 14%,transparent)}
+.qm-notice-card.error .qm-notice-icon{color:var(--dsw-alias-state-error-primary);background:color-mix(in srgb,var(--dsw-alias-state-error-primary) 14%,transparent)}
+.qm-notice-text{flex:1;min-width:0;padding-top:2px}
+.qm-notice-message{font-size:12.5px;line-height:1.5}
+.qm-notice-hint{font-size:11.5px;line-height:1.55;color:var(--dsw-alias-label-secondary);margin-top:3px}
+.qm-notice-card .qm-iconbtn{margin-top:1px}
+@keyframes qm-card-in{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
 .qm-player{display:flex;align-items:center;gap:16px;padding:9px 18px;flex:none;min-height:74px;border-top:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);position:relative;z-index:20}
 .qm-player-left{display:flex;align-items:center;gap:6px;width:252px;flex:none;min-width:0}
 .qm-player-info{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:44px;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:left;padding:0 4px 0 0;cursor:pointer}
@@ -1168,6 +1212,14 @@ window.__ModuleLoader__.load({
             if (typeof off === 'function') off()
           }
         }, [])
+
+        React.useEffect(() => {
+          if (!notice || !notice.autoClose) return undefined
+          const timer = window.setTimeout(() => {
+            setNotice((current) => (current === notice ? null : current))
+          }, notice.autoClose)
+          return () => window.clearTimeout(timer)
+        }, [notice])
 
         async function loadQuarter(name) {
           if (!name) return null
@@ -1473,6 +1525,7 @@ window.__ModuleLoader__.load({
             )
             setNotice({
               kind: 'ok',
+              autoClose: 5000,
               text: result.duplicate
                 ? t('fav.duplicate', { name: result.playlist.name, count: result.count })
                 : t('fav.success', { name: result.playlist.name, count: result.count }),
@@ -1506,6 +1559,7 @@ window.__ModuleLoader__.load({
             )
             setNotice({
               kind: 'ok',
+              autoClose: 5000,
               text: result.duplicate
                 ? t('fav.duplicate', { name: result.playlist.name, count: result.count })
                 : t('fav.success', { name: result.playlist.name, count: result.count }),
@@ -2015,20 +2069,25 @@ window.__ModuleLoader__.load({
           return renderHome()
         }
 
-        const noticeBox = notice
+        const noticeCard = notice
           ? h(
               'div',
-              { className: `qm-toast ${notice.kind || ''}`, role: 'status', 'aria-live': 'polite' },
+              { className: 'qm-notice-layer' },
               h(
                 'div',
-                { className: 'qm-toast-text' },
-                h('div', null, notice.text),
-                notice.hint ? h('div', { style: { marginTop: 2, opacity: 0.9 } }, notice.hint) : null,
-              ),
-              h(
-                'button',
-                { className: 'qm-iconbtn', onClick: () => setNotice(null), title: t('notice.close'), 'aria-label': t('notice.close') },
-                h(XIcon, { size: 13 }),
+                { className: `qm-notice-card ${notice.kind || ''}`, role: 'status', 'aria-live': 'polite' },
+                h('span', { className: 'qm-notice-icon' }, h(StatusIcon, { kind: notice.kind, size: 15 })),
+                h(
+                  'div',
+                  { className: 'qm-notice-text' },
+                  h('div', { className: 'qm-notice-message' }, notice.text),
+                  notice.hint ? h('div', { className: 'qm-notice-hint' }, notice.hint) : null,
+                ),
+                h(
+                  'button',
+                  { className: 'qm-iconbtn', onClick: () => setNotice(null), title: t('notice.close'), 'aria-label': t('notice.close') },
+                  h(XIcon, { size: 13 }),
+                ),
               ),
             )
           : null
@@ -2531,7 +2590,8 @@ window.__ModuleLoader__.load({
           { className: 'qm-root' },
           h('style', null, CSS),
           toolbar,
-          h('main', { className: 'qm-content', ref: contentRef }, noticeBox, renderContent()),
+          h('main', { className: 'qm-content', ref: contentRef }, renderContent()),
+          noticeCard,
           playerBar,
           queuePanel,
           nowPlaying,
